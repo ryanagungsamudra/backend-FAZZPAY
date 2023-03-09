@@ -7,7 +7,7 @@ const usersModel = {
     create: ({ phone, status, balance, img_profile }) => {
         return new Promise((resolve, reject) => {
             db.query(
-                `INSERT INTO users (id, phone, status, balance, img_profile) 
+                `INSERT INTO fazzpay_users (id, phone, status, balance, img_profile) 
                 VALUES ('${uuidv4()}','${phone}','${status}','${balance}','${img_profile}'`,
                 (err, result) => {
                     if (err) {
@@ -38,7 +38,7 @@ const usersModel = {
     read: function (search, full_name, sortBy = 'ASC', limit = 25, offset = 0) {
         return new Promise((resolve, reject) => {
             db.query(
-                `SELECT * from users ${this.query(search, full_name, sortBy, limit, offset)}`,
+                `SELECT * from fazzpay_users ${this.query(search, full_name, sortBy, limit, offset)}`,
                 (err, result) => {
                     // console.log(result);
                     if (err) {
@@ -54,7 +54,7 @@ const usersModel = {
     readDetail: (id) => {
         return new Promise((resolve, reject) => {
             db.query(
-                `SELECT * from users WHERE id='${id}'`,
+                `SELECT * from fazzpay_users WHERE id='${id}'`,
                 (err, result) => {
                     if (err) {
                         return reject(err.message)
@@ -70,7 +70,7 @@ const usersModel = {
     update: function (req, id) {
         return new Promise((success, failed) => {
             const { email, phone, full_name, pin, balance, income, expense, img_profile } = req.body
-            db.query(`SELECT * FROM users WHERE id='${id}'`, (error, result) => {
+            db.query(`SELECT * FROM fazzpay_users WHERE id='${id}'`, (error, result) => {
                 if (error) {
                     return failed(error.message)
                 } else {
@@ -79,7 +79,7 @@ const usersModel = {
                         return failed('Id not found!')
                     } else {
                         db.query(
-                            `UPDATE users SET 
+                            `UPDATE fazzpay_users SET 
                                 email='${email || result.rows[0].email}', 
                                 phone='${phone || result.rows[0].phone}', 
                                 full_name='${full_name || result.rows[0].full_name}', 
@@ -106,7 +106,7 @@ const usersModel = {
     remove: (id) => {
         return new Promise((resolve, reject) => {
             db.query(
-                `DELETE from users WHERE id='${id}' RETURNING img_profile`,
+                `DELETE from fazzpay_users WHERE id='${id}' RETURNING img_profile`,
                 (err, result) => {
                     console.log(result);
                     if (err) {

@@ -7,7 +7,7 @@ const transactionModel = {
     create: ({ sender_id, receiver_id, amount = 0, status, time, note, sender_name, receiver_name }) => {
         return new Promise((resolve, reject) => {
             db.query(
-                `INSERT INTO transaction 
+                `INSERT INTO fazzpay_transaction 
                 (id, sender_id, receiver_id, amount, status, time, note, sender_name, receiver_name) 
                 VALUES 
                 ('${uuidv4()}','${sender_id}','${receiver_id}','${amount}','${status}','${time}','${note}','${sender_name}','${receiver_name}')`,
@@ -16,7 +16,7 @@ const transactionModel = {
                         return reject(err.message)
                     } else {
                         db.query(
-                            `UPDATE users SET 
+                            `UPDATE fazzpay_users SET 
                             balance = balance + $1,
                             income = $2
                             WHERE id = $3`,
@@ -26,7 +26,7 @@ const transactionModel = {
                                     return reject(err.message)
                                 } else {
                                     db.query(
-                                        `UPDATE users SET
+                                        `UPDATE fazzpay_users SET
                                     balance = balance - $1,
                                     expense = $2
                                     WHERE id = $3`,
@@ -66,7 +66,7 @@ const transactionModel = {
     read: function (search, status, sortBy = 'ASC', limit = 25, offset = 0) {
         return new Promise((resolve, reject) => {
             db.query(
-                `SELECT * from transaction ${this.query(search, status, sortBy, limit, offset)}`,
+                `SELECT * from fazzpay_transaction ${this.query(search, status, sortBy, limit, offset)}`,
                 (err, result) => {
                     console.log(result);
                     if (err) {
@@ -85,8 +85,8 @@ const transactionModel = {
                 `SELECT 
                     p.id, p.full_name, p.balance, p.income, p.expense,
                     json_agg(row_to_json(pi)) history 
-                FROM users p
-                INNER JOIN transaction pi ON p.id = pi.sender_id 
+                FROM fazzpay_users p
+                INNER JOIN fazzpay_transaction pi ON p.id = pi.sender_id 
                 AND p.id='${id}'
                 GROUP BY p.id`,
                 // `SELECT * from transaction WHERE id='${id}'`,
@@ -132,13 +132,13 @@ const transactionModel = {
     // },
     update: ({ id, amount }) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM users WHERE id='${id}'`, (err, result) => {
+            db.query(`SELECT * FROM fazzpay_users WHERE id='${id}'`, (err, result) => {
                 // console.log(result);
                 if (err) {
                     return reject(err.message);
                 } else {
                     db.query(
-                        `UPDATE users SET
+                        `UPDATE fazzpay_users SET
                         balance = balance + $1,
                         income = $2
                         WHERE id = $3`,
@@ -162,7 +162,7 @@ const transactionModel = {
     remove: (id) => {
         return new Promise((resolve, reject) => {
             db.query(
-                `DELETE from transaction WHERE id='${id}'`,
+                `DELETE from fazzpay_transaction WHERE id='${id}'`,
                 (err, result) => {
                     if (err) {
                         return reject(err.message)

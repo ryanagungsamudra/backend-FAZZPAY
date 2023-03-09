@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const authModel = {
     login: ({ email, password }) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM users WHERE email=$1`, [email], (err, result) => {
+            db.query(`SELECT * FROM fazzpay_users WHERE email=$1`, [email], (err, result) => {
                 //username = unique||email = unique
                 if (err) return reject(err.message)
                 if (result.rows.length == 0) return reject('Wrong email or password!') //ketika email salah
@@ -26,7 +26,7 @@ const authModel = {
     signup: ({ email, password, full_name, phone }) => {
         return new Promise((resolve, reject) => {
             db.query(
-                `INSERT INTO users (id, email, password, full_name, phone) VALUES($1, $2, $3, $4, $5)`,
+                `INSERT INTO fazzpay_users (id, email, password, full_name, phone) VALUES($1, $2, $3, $4, $5)`,
                 [uuidv4(), email, password, full_name, phone],
                 (err, result) => {
                     if (err) {
